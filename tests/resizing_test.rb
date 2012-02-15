@@ -1,10 +1,8 @@
 ENV['RACK_ENV'] = 'test'
 Bundler.setup(:default)
-require_relative "../app.rb"
+require File.expand_path("../../app.rb", __FILE__)
 require 'test/unit'
 Bundler.require(:test)
-
-Sinatra::Synchrony.patch_tests!
 
 class ImgioTest < Test::Unit::TestCase
   include Rack::Test::Methods

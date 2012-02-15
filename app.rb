@@ -1,6 +1,4 @@
-# coding: utf-8
 require "sinatra"
-require "sinatra/synchrony"
 if development?
   require "sinatra/reloader"
   also_reload 'lib/**/*'
@@ -10,10 +8,9 @@ verbose_was = $VERBOSE
 $VERBOSE=nil; require 'RMagick'
 $VERBOSE = verbose_was
 
-require_relative "lib/magick_processor"
-require_relative "lib/http"
+require File.expand_path("../lib/magick_processor", __FILE__)
+require File.expand_path("../lib/http", __FILE__)
 
-disable :threaded
 disable :run
 set :mime_types, {
   'jpg'  => 'image/jpeg',
@@ -33,7 +30,9 @@ get %r{/(?:(scale_down|fit|fill)/)?(?:((?:jpg(?:\d{1,3})?|png))/)?(\d+)/(?:(\d+)
   
   mode ||= :scale_down
   formatstring ||= 'jpg85'
-  /(?<format>[a-z]+)(?<quality>\d+)?/i =~ formatstring
+  /([a-z]+)(\d+)?/i =~ formatstring
+  format = $1
+  quality = $2
   content_type settings.mime_types[format]
   Magick.process(mode, format, quality, width, height, uri)
 end
